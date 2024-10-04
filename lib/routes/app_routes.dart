@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vt_app/pages/name_input.dart';
 import '../pages/home_page.dart';
 import '../pages/otp_page.dart';
 import '../pages/phone_input_page.dart';
@@ -15,11 +16,19 @@ class AppRoutes {
             isExistingUser: (ModalRoute.of(context)!.settings.arguments
                 as Map<String, dynamic>)['isExistingUser'] as bool,
           ),
+      '/name_input': (context) => NameInputPage(
+            phoneNumber: (ModalRoute.of(context)!.settings.arguments
+                as Map<String, dynamic>)['phoneNumber'] as String,
+            pin: (ModalRoute.of(context)!.settings.arguments
+                as Map<String, dynamic>)['pin'] as String,
+          ),
       '/otp': (context) => OtpPage(
             phoneNumber: (ModalRoute.of(context)!.settings.arguments
                 as Map<String, dynamic>)['phoneNumber'] as String,
             pin: (ModalRoute.of(context)!.settings.arguments
                 as Map<String, dynamic>)['pin'] as String,
+            name: (ModalRoute.of(context)!.settings.arguments
+                as Map<String, dynamic>)['name'] as String,
           ),
       '/home': (context) => userData != null
           ? HomePage(

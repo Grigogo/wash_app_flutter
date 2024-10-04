@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:vt_app/models/auth_response.dart';
+import 'package:vt_app/utils/const/app_colors.dart';
+import 'package:vt_app/widget/ui/custom_button.dart';
+import 'package:vt_app/widget/ui/otp_input.dart';
 import '../services/secure_storage_service.dart';
 import '../models/user.dart';
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;
   final String pin;
+  final String name;
 
-  const OtpPage({Key? key, required this.phoneNumber, required this.pin})
-      : super(key: key);
+  const OtpPage({
+    Key? key,
+    required this.phoneNumber,
+    required this.pin,
+    required this.name,
+  }) : super(key: key);
 
   @override
   _OtpPageState createState() => _OtpPageState();
@@ -18,16 +26,14 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   final TextEditingController _otpController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final SecureStorageService _storageService = SecureStorageService();
 
   Future<void> _verifyOtp() async {
-    final otp = _otpController.text;
-    final name = _nameController.text;
+    final otp = _otpController.text; // Берем значение OTP из контроллера
 
-    if (otp.isEmpty || name.isEmpty) {
+    if (otp.isEmpty || otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Пожалуйста, заполните все поля')),
+        const SnackBar(content: Text('Пожалуйста, введите корректный OTP')),
       );
       return;
     }
@@ -37,19 +43,14 @@ class _OtpPageState extends State<OtpPage> {
         'phoneNumber': widget.phoneNumber,
         'pin': widget.pin,
         'otp': otp,
-        'name': name,
+        'name': widget.name,
       });
-
-      print('Request Body: $requestBody');
 
       final response = await http.post(
         Uri.parse('http://192.168.0.122:4200/api/auth/verify-otp'),
         headers: {'Content-Type': 'application/json'},
         body: requestBody,
       );
-
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -63,7 +64,6 @@ class _OtpPageState extends State<OtpPage> {
           await _storageService.saveTokens(
               authResponse.accessToken, authResponse.refreshToken);
 
-          // Запрос данных о пользователе
           final userResponse = await http.get(
             Uri.parse('http://192.168.0.122:4200/api/users/profile'),
             headers: {
@@ -102,30 +102,43 @@ class _OtpPageState extends State<OtpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Введите OTP'),
+        title: const Text('Регистрация'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
         child: Column(
           children: [
-            TextField(
-              controller: _otpController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'OTP',
-              ),
+            Expanded(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Введите код подтверждения',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    ),
+                    const Text(
+                      'Последние 6 цифр номера телефона с которого мы вам позвонили',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 20),
+                    OTPInputField(
+                      length: 6,
+                      onChanged: (otp) {
+                        _otpController.text = otp; // Обновляем контроллер
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ]),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Имя',
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
+            CustomButton(
               onPressed: _verifyOtp,
-              child: const Text('Далее'),
+              text: 'Зарегистрироваться',
+              buttonColor: AppColors.getPrimaryColor(context),
+              textColor: AppColors.getButtonTextColor(context),
             ),
           ],
         ),

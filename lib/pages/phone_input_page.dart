@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:vt_app/utils/const/app_colors.dart';
+import 'package:vt_app/widget/ui/custom_button.dart';
+import 'package:vt_app/widget/ui/custom_input.dart';
 
 class PhoneInputPage extends StatefulWidget {
   const PhoneInputPage({Key? key}) : super(key: key);
@@ -32,13 +36,13 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData['exists']) {
-          Navigator.pushReplacementNamed(
+          Navigator.pushNamed(
             context,
             '/pin_code',
             arguments: {'phoneNumber': phoneNumber, 'isExistingUser': true},
           );
         } else {
-          Navigator.pushReplacementNamed(
+          Navigator.pushNamed(
             context,
             '/pin_code',
             arguments: {'phoneNumber': phoneNumber, 'isExistingUser': false},
@@ -61,22 +65,52 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
         child: Column(
           children: [
-            Text('Введите номер телефона'),
-            Text('Чтобы войти или зарегистрироваться'),
-            TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Номер телефона',
+            // Центровка контента
+            Expanded(
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, // Центровка по вертикали
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Центровка по горизонтали
+                children: [
+                  const Text(
+                    'Введите номер телефона',
+                    textAlign: TextAlign.center, // Текст по центру
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Чтобы войти или зарегистрироваться',
+                    textAlign: TextAlign.center, // Текст по центру
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    label: '+7 (999) 999 99 99',
+                    keyboardType: TextInputType.phone,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .secondary, // Заливка фоном
+                    controller: _phoneController,
+                    maskFormatter: MaskTextInputFormatter(
+                      mask: '+7 (###) ###-##-##',
+                      filter: {
+                        "#": RegExp(r'[0-9]')
+                      }, // Допустимые символы для маски
+                    ), // Маска для номера телефона
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _checkUserExists,
-              child: const Text('Далее'),
+            // Кнопка прижата к низу
+            CustomButton(
+              onPressed: _checkUserExists, // Функция нажатия
+              text: 'Далее', // Текст кнопки
+              buttonColor: AppColors.getPrimaryColor(context), // Цвет кнопки
+              textColor: AppColors.getButtonTextColor(context), // Цвет текста
             ),
           ],
         ),
