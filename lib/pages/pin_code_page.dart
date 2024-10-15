@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:vt_app/models/auth_response.dart';
-import 'package:vt_app/pages/home_page.dart';
+import 'package:vt_app/services/auth_service.dart';
+import 'package:vt_app/services/secure_storage_service.dart';
 import 'package:vt_app/utils/const/app_colors.dart';
 import 'package:vt_app/widget/ui/custom_button.dart';
 import 'package:vt_app/widget/ui/pin.dart';
-import '../services/secure_storage_service.dart';
-import '../models/user.dart';
 
 class PinCodePage extends StatefulWidget {
   final String phoneNumber;
@@ -23,6 +19,7 @@ class PinCodePage extends StatefulWidget {
 class _PinCodePageState extends State<PinCodePage> {
   String _pin = ''; // Храним введённый PIN-код
   final SecureStorageService _storageService = SecureStorageService();
+  final AuthService _authService = AuthService();
 
   Future<void> _handlePinCode() async {
     if (_pin.isEmpty || _pin.length < 4) {
@@ -34,34 +31,18 @@ class _PinCodePageState extends State<PinCodePage> {
 
     try {
       if (widget.isExistingUser) {
-        final response = await http.post(
-          Uri.parse('http://192.168.0.122:4200/api/auth/login'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'phoneNumber': widget.phoneNumber, 'pin': _pin}),
-        );
-
-        if (response.statusCode == 200) {
-          final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+        final authResponse = await _authService.login(widget.phoneNumber, _pin);
+        if (authResponse != null) {
           await _storageService.saveTokens(
               authResponse.accessToken, authResponse.refreshToken);
 
-          // Запрос данных о пользователе
-          final userResponse = await http.get(
-            Uri.parse('http://192.168.0.122:4200/api/users/profile'),
-            headers: {
-              'Authorization': 'Bearer ${authResponse.accessToken}',
-            },
-          );
-
-          if (userResponse.statusCode == 200) {
-            final userData = User.fromJson(jsonDecode(userResponse.body));
-            Navigator.pushAndRemoveUntil(
+          final userData =
+              await _authService.getUserProfile(authResponse.accessToken);
+          if (userData != null) {
+            Navigator.pushReplacementNamed(
               context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(userData: userData),
-              ),
-              (Route<dynamic> route) =>
-                  false, // Это удаляет все предыдущие маршруты
+              '/home',
+              arguments: {'userData': userData},
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(

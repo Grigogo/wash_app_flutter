@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:vt_app/services/auth_service.dart';
 import 'package:vt_app/utils/const/app_colors.dart';
 import 'package:vt_app/widget/ui/custom_button.dart';
 import 'package:vt_app/widget/ui/custom_input.dart';
@@ -15,6 +14,7 @@ class PhoneInputPage extends StatefulWidget {
 
 class _PhoneInputPageState extends State<PhoneInputPage> {
   final TextEditingController _phoneController = TextEditingController();
+  final AuthService _apiService = AuthService();
 
   Future<void> _checkUserExists() async {
     final phoneNumber = _phoneController.text;
@@ -27,30 +27,18 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
     }
 
     try {
-      final response = await http.post(
-        Uri.parse('http://192.168.0.122:4200/api/auth/check-user-exists'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'phoneNumber': phoneNumber}),
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        if (responseData['exists']) {
-          Navigator.pushNamed(
-            context,
-            '/pin_code',
-            arguments: {'phoneNumber': phoneNumber, 'isExistingUser': true},
-          );
-        } else {
-          Navigator.pushNamed(
-            context,
-            '/pin_code',
-            arguments: {'phoneNumber': phoneNumber, 'isExistingUser': false},
-          );
-        }
+      final exists = await _apiService.checkUserExists(phoneNumber);
+      if (exists) {
+        Navigator.pushNamed(
+          context,
+          '/pin_code',
+          arguments: {'phoneNumber': phoneNumber, 'isExistingUser': true},
+        );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ошибка при проверке номера телефона')),
+        Navigator.pushNamed(
+          context,
+          '/pin_code',
+          arguments: {'phoneNumber': phoneNumber, 'isExistingUser': false},
         );
       }
     } catch (e) {
@@ -59,6 +47,23 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
         SnackBar(content: Text('Ошибка: $e')),
       );
     }
+  }
+
+  void _navigateToForgotPassword() {
+    final phoneNumber = _phoneController.text;
+
+    if (phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Пожалуйста, введите номер телефона')),
+      );
+      return;
+    }
+
+    Navigator.pushNamed(
+      context,
+      '/forgot_password',
+      arguments: phoneNumber,
+    );
   }
 
   @override
@@ -101,6 +106,17 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
                         "#": RegExp(r'[0-9]')
                       }, // Допустимые символы для маски
                     ), // Маска для номера телефона
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: _navigateToForgotPassword,
+                    child: const Text(
+                      'Забыли пароль?',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
                 ],
               ),
