@@ -5,8 +5,8 @@ import 'package:vt_app/models/auth_response.dart';
 import 'package:vt_app/utils/const/app_colors.dart';
 import 'package:vt_app/widget/ui/custom_button.dart';
 import 'package:vt_app/widget/ui/otp_input.dart';
-import '../services/secure_storage_service.dart';
-import '../models/user.dart';
+import '../../services/secure_storage_service.dart';
+import '../../models/user.dart';
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;

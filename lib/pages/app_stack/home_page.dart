@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/user.dart';
-import '../services/secure_storage_service.dart';
+import '../../models/user.dart';
+import '../../services/secure_storage_service.dart';
 
 class HomePage extends StatelessWidget {
   final User userData;

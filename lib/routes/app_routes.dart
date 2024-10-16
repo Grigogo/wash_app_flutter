@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:vt_app/pages/forgot_password_otp_page.dart';
-import 'package:vt_app/pages/forgot_password_pin_page.dart';
-import 'package:vt_app/pages/name_input.dart';
-import '../pages/home_page.dart';
-import '../pages/otp_page.dart';
-import '../pages/phone_input_page.dart';
-import '../pages/pin_code_page.dart';
+import 'package:vt_app/pages/auth/forgot_password_otp_page.dart';
+import 'package:vt_app/pages/auth/forgot_password_pin_page.dart';
+import 'package:vt_app/pages/auth/name_input.dart';
+import '../pages/app_stack/home_page.dart';
+import '../pages/auth/otp_page.dart';
+import '../pages/auth/phone_input_page.dart';
+import '../pages/auth/pin_code_page.dart';
 import '../models/user.dart';
 
 class AppRoutes {
