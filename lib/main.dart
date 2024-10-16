@@ -110,12 +110,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const MaterialApp(
-          home: Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ));
+      return MaterialApp(
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: ThemeMode.system,
+          home: const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ));
     }
 
     return Consumer<ThemeProvider>(
