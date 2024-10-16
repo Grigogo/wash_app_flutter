@@ -10,33 +10,45 @@ class UserService {
   final NetworkService _networkService = NetworkService();
 
   Future<User?> fetchUserData(String accessToken) async {
-    try {
-      final isConnected = await _networkService.isConnected();
-      if (!isConnected) {
-        // Загружаем данные из локального хранилища
-        return await _userStorage.getUserData();
-      }
+    final isConnected = await _networkService.isConnected();
 
-      final response = await http.get(
-        Uri.parse('$baseUrl/users/profile'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        await _userStorage.clearUserData();
-        final userData = User.fromJson(jsonDecode(response.body));
-        // Обновляем данные в локальном хранилище
-        await _userStorage.saveUserData(userData);
-        return userData;
-      } else {
-        // Если запрос к серверу не удался, возвращаем данные из локального хранилища
-        return await _userStorage.getUserData();
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
+    if (!isConnected) {
+      // Загружаем данные из локального хранилища
+      _showOfflineMessage();
       return await _userStorage.getUserData();
     }
+
+    final isServerAvailable = await _networkService.isServerAvailable(baseUrl);
+
+    if (!isServerAvailable) {
+      _showServerErrorMessage();
+      return await _userStorage.getUserData();
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/users/profile'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final userData = User.fromJson(jsonDecode(response.body));
+      // Обновляем данные в локальном хранилище
+      await _userStorage.saveUserData(userData);
+      return userData;
+    } else {
+      return await _userStorage.getUserData();
+    }
+  }
+
+  void _showOfflineMessage() {
+    print("Работаем автономно.");
+    // Выводите уведомление в UI
+  }
+
+  void _showServerErrorMessage() {
+    print("Ошибка сервера.");
+    // Выводите уведомление в UI
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:vt_app/services/secure_storage_service.dart';
 import 'package:vt_app/services/user_storage_srvice.dart';
 import '../../models/user.dart';
-import '../../services/secure_storage_service.dart';
 
 class HomePage extends StatelessWidget {
-  final User userData;
+  final User? userData;
 
   const HomePage({super.key, required this.userData});
 
@@ -19,33 +19,19 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Вызывайте здесь метод для загрузки данных о пользователе
-    final UserStorageService userStorageService = UserStorageService();
-    return FutureBuilder<User?>(
-      future: userStorageService.getUserData(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError || !snapshot.hasData) {
-          return const Center(child: Text('Ошибка загрузки данных'));
-        } else {
-          final user = snapshot.data!;
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Главная'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () => _logout(context),
-                ),
-              ],
-            ),
-            body: Center(
-              child: Text('Добро пожаловать, ${user.name}!'),
-            ),
-          );
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Главная'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _logout(context),
+          ),
+        ],
+      ),
+      body: Center(
+        child: Text('Добро пожаловать, ${userData?.name ?? 'Гость'}!'),
+      ),
     );
   }
 }
