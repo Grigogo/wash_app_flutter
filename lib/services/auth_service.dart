@@ -1,11 +1,17 @@
 // auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:vt_app/services/network_service.dart';
+import 'package:vt_app/services/secure_storage_service.dart';
+import 'package:vt_app/services/user_storage_srvice.dart';
 import '../models/auth_response.dart';
 import '../models/user.dart';
 
 class AuthService {
   final String baseUrl = 'http://192.168.0.122:4200/api';
+  final SecureStorageService _secureStorage = SecureStorageService();
+  final UserStorageService _userStorage = UserStorageService();
+  final NetworkService _networkService = NetworkService();
 
   Future<bool> checkUserExists(String phoneNumber) async {
     try {
@@ -48,6 +54,15 @@ class AuthService {
 
   Future<User?> getUserProfile(String accessToken) async {
     try {
+      final isConnected = await _networkService.isConnected();
+      if (!isConnected) {
+        // Если нет сети, подгружаем данные из локального хранилища
+        return await _userStorage.getUserData();
+      }
+
+      final accessToken = await _secureStorage.getAccessToken();
+      if (accessToken == null) return null;
+
       final response = await http.get(
         Uri.parse('$baseUrl/users/profile'),
         headers: {
@@ -56,13 +71,17 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        return User.fromJson(jsonDecode(response.body));
+        final userData = User.fromJson(jsonDecode(response.body));
+        // Обновляем данные в локальном хранилище
+        await _userStorage.saveUserData(userData);
+        return userData;
       } else {
-        return null;
+        // Если запрос к серверу не удался, возвращаем данные из локального хранилища
+        return await _userStorage.getUserData();
       }
     } catch (e) {
       print('Error fetching user profile: $e');
-      return null;
+      return await _userStorage.getUserData();
     }
   }
 

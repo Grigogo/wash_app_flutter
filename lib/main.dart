@@ -46,26 +46,27 @@ class _MyAppState extends State<MyApp> {
         if (isSuccess) {
           setState(() {
             _isAuthenticated = true;
-            _isLoading = false;
           });
         } else {
           await _storageService
               .deleteTokens(); // Если токены не валидны, удаляем их
           setState(() {
             _isAuthenticated = false;
-            _isLoading = false;
           });
         }
       } else {
         setState(() {
           _isAuthenticated = false;
-          _isLoading = false;
         });
       }
     } catch (e) {
       print('Error checking auth status: $e');
       setState(() {
         _isAuthenticated = false;
+      });
+    } finally {
+      // Устанавливаем _isLoading в false после выполнения
+      setState(() {
         _isLoading = false;
       });
     }
@@ -74,7 +75,6 @@ class _MyAppState extends State<MyApp> {
   Future<bool> _fetchUserData(String accessToken, String refreshToken) async {
     try {
       User? user = await _authService.getUserProfile(accessToken);
-      print('USER: $user');
       if (user != null) {
         setState(() {
           _userData = user;

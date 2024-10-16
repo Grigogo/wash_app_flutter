@@ -39,9 +39,10 @@ class _PinCodePageState extends State<PinCodePage> {
           final userData =
               await _authService.getUserProfile(authResponse.accessToken);
           if (userData != null) {
-            Navigator.pushReplacementNamed(
+            Navigator.pushNamedAndRemoveUntil(
               context,
               '/home',
+              (Route<dynamic> route) => false,
               arguments: {'userData': userData},
             );
           } else {
@@ -56,9 +57,10 @@ class _PinCodePageState extends State<PinCodePage> {
           );
         }
       } else {
-        Navigator.pushReplacementNamed(
+        Navigator.pushNamedAndRemoveUntil(
           context,
           '/name_input',
+          (Route<dynamic> route) => false,
           arguments: {'phoneNumber': widget.phoneNumber, 'pin': _pin},
         );
       }
