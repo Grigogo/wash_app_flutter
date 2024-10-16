@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vt_app/models/auth_response.dart';
+import 'package:vt_app/services/user_service.dart';
 import 'providers/theme_provider.dart';
 import 'services/secure_storage_service.dart';
 import 'services/auth_service.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final SecureStorageService _storageService = SecureStorageService();
   final AuthService _authService = AuthService();
+  final UserService _userService = UserService();
   bool _isLoading = true;
   bool _isAuthenticated = false;
   User? _userData; // Делаем переменную nullable
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<bool> _fetchUserData(String accessToken, String refreshToken) async {
     try {
-      User? user = await _authService.getUserProfile(accessToken);
+      User? user = await _userService.fetchUserData(accessToken);
       if (user != null) {
         setState(() {
           _userData = user;

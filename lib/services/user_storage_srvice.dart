@@ -1,33 +1,19 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/user.dart';
+import 'package:vt_app/models/user.dart';
+import 'package:vt_app/database/database_service.dart';
 
 class UserStorageService {
+  final DatabaseService _databaseService = DatabaseService();
+
   Future<void> saveUserData(User user) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('userId', user.id);
-    prefs.setString('phoneNumber', user.phoneNumber);
-    prefs.setString('name', user.name);
-    prefs.setString('picture', user.picture);
-    prefs.setInt('balance', user.balance);
-    prefs.setInt('cashback', user.cashback);
+    await _databaseService.saveUser(user);
   }
 
   Future<User?> getUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userId')) return null;
-
-    return User(
-      id: prefs.getString('userId')!,
-      phoneNumber: prefs.getString('phoneNumber')!,
-      name: prefs.getString('name')!,
-      picture: prefs.getString('picture')!,
-      balance: prefs.getInt('balance')!,
-      cashback: prefs.getInt('cashback')!,
-    );
+    return await _databaseService.getUser();
   }
 
   Future<void> clearUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    print("Clearing user data from storage...");
+    await _databaseService.clearUser();
   }
 }

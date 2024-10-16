@@ -15,6 +15,28 @@ class User {
     required this.cashback,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'phoneNumber': phoneNumber,
+      'name': name,
+      'picture': picture,
+      'balance': balance,
+      'cashback': cashback,
+    };
+  }
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'],
+      phoneNumber: map['phoneNumber'],
+      name: map['name'],
+      picture: map['picture'],
+      balance: map['balance'],
+      cashback: map['cashback'],
+    );
+  }
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
