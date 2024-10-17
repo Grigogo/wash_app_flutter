@@ -51,4 +51,16 @@ class UserService {
     print("Ошибка сервера.");
     // Выводите уведомление в UI
   }
+
+  Future<void> _compareAndSaveUserData(User newUser) async {
+    User? localUser = await _userStorage.getUserData();
+
+    if (localUser == null || localUser != newUser) {
+      // Если данные отличаются, сохраняем новые данные
+      await _userStorage.saveUserData(newUser);
+      print("Данные пользователя обновлены.");
+    } else {
+      print("Данные пользователя не изменились.");
+    }
+  }
 }

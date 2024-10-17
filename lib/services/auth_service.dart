@@ -1,5 +1,6 @@
 // auth_service.dart
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:vt_app/services/network_service.dart';
 import 'package:vt_app/services/secure_storage_service.dart';
@@ -152,5 +153,12 @@ class AuthService {
       print('Error verifying OTP and setting new password: $e');
       return false;
     }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    print("User requested to logout.");
+    await _secureStorage.deleteTokens();
+    await _userStorage.clearUserData(); // Очищаем данные пользователя
+    Navigator.pushReplacementNamed(context, '/phone_input');
   }
 }

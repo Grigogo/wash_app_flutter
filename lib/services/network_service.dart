@@ -4,12 +4,9 @@ import 'package:http/http.dart' as http;
 class NetworkService {
   Future<bool> isConnected() async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    print("Connectivity result: $connectivityResult");
     if (connectivityResult.contains(ConnectivityResult.none)) {
-      print('none WIFI and mobile');
       return false;
     } else {
-      print('VSE OK');
       return true;
     }
   }

@@ -100,7 +100,6 @@ class _MyAppState extends State<MyApp> {
     _networkCheckTimer =
         Timer.periodic(const Duration(seconds: 1), (timer) async {
       final isConnected = await _networkService.isConnected();
-      print('Connec?: $isConnected');
 
       if (!isConnected && !_isNetworkLost) {
         _isNetworkLost = true;
@@ -108,8 +107,19 @@ class _MyAppState extends State<MyApp> {
         timer.cancel();
         _startNetworkCheckWithDelay();
       } else if (isConnected && _isNetworkLost) {
+        // Если интернет восстановлен
         _isNetworkLost = false;
         _showSnackBar("Соединение восстановлено.");
+
+        // Проверяем доступность сервера
+        final isServerAvailable = await _networkService
+            .isServerAvailable('http://192.168.0.122:4200/api');
+        if (!isServerAvailable) {
+          _showSnackBar("Сервер недоступен.");
+        } else {
+          _startDataUpdate(); // Обновление данных, если сервер доступен
+        }
+
         timer.cancel();
         _startNetworkMonitoring();
       }
@@ -120,11 +130,19 @@ class _MyAppState extends State<MyApp> {
     _networkCheckTimer =
         Timer.periodic(const Duration(seconds: 10), (timer) async {
       final isConnected = await _networkService.isConnected();
-      print('Connectivity result with delay: $isConnected');
-
       if (isConnected) {
         _isNetworkLost = false;
         _showSnackBar("Соединение восстановлено.");
+
+        // Проверяем сервер
+        final isServerAvailable = await _networkService
+            .isServerAvailable('http://192.168.0.122:4200/api');
+        if (!isServerAvailable) {
+          _showSnackBar("Сервер недоступен.");
+        } else {
+          _startDataUpdate();
+        }
+
         timer.cancel();
         _startNetworkMonitoring();
       }

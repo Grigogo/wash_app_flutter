@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:vt_app/pages/app_stack/city_picker_page.dart';
+import 'package:vt_app/pages/app_stack/notification_page.dart';
+import 'package:vt_app/pages/app_stack/profile_page.dart';
 import 'package:vt_app/pages/auth/forgot_password_otp_page.dart';
 import 'package:vt_app/pages/auth/forgot_password_pin_page.dart';
 import 'package:vt_app/pages/auth/name_input.dart';
-import '../pages/app_stack/home_page.dart';
-import '../pages/auth/otp_page.dart';
-import '../pages/auth/phone_input_page.dart';
-import '../pages/auth/pin_code_page.dart';
+import 'package:vt_app/pages/auth/otp_page.dart';
+import 'package:vt_app/pages/auth/phone_input_page.dart';
+import 'package:vt_app/pages/auth/pin_code_page.dart';
+import 'package:vt_app/widget/bottom_navigation_bar.dart';
 import '../models/user.dart';
 
 class AppRoutes {
@@ -19,7 +22,18 @@ class AppRoutes {
       '/forgot_password_otp': (context) =>
           _createForgotPasswordOtpPage(context),
       '/home': (context) => userData != null
-          ? HomePage(userData: userData)
+          ? BottomNavPage(userData: userData) // Теперь открываем BottomNavPage
+          : const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+      '/city_picker': (context) =>
+          const CityPickerPage(), // Добавляем маршрут для страницы выбора города
+      '/notifications': (context) =>
+          const NotificationsPage(), // Добавляем маршрут для страницы оповещений
+      '/profile': (context) => userData != null
+          ? ProfilePage(userData: userData) // Добавляем роут для профиля
           : const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),

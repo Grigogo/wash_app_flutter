@@ -5,6 +5,8 @@ class AppColors {
   static const Color lightPrimary = Color(0xFF3DB0D4);
   static const Color lightBgColor = Color(0xFFFFFFFF);
   static const Color lightBlack1Color = Color(0xFFFFFFFF);
+  static const Color lightMenuIcon = Color(0xFF9EA6B2);
+  static const Color lightBorderMenu = Color(0xFFE0E4EC);
   static const Color lightSecondary = Color(0xFFFFFFFF);
   static const Color lightText = Color(0xFF111419);
   static const Color lightSecondButton =
@@ -14,6 +16,8 @@ class AppColors {
   static const Color darkPrimary = Color(0xFF3DB0D4);
   static const Color darkBgColor = Color(0xFF111419);
   static const Color darkBlack1Color = Color(0xFF1D2329);
+  static const Color darkMenuIcon = Color(0xFF5F656E);
+  static const Color darkBorderMenu = Color(0xFF212730);
   static const Color darkSecondary = Color(0xFF1E2229);
   static const Color darkText = Colors.white;
   static const Color darkSecondButton =
@@ -25,10 +29,28 @@ class AppColors {
         : lightPrimary;
   }
 
+  static Color getBgColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? darkBgColor
+        : lightBgColor;
+  }
+
+  static Color getBorderMenuColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? darkBorderMenu
+        : lightBorderMenu;
+  }
+
   static Color getTextColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? lightBgColor
         : darkBgColor;
+  }
+
+  static Color getMenuIconColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? lightMenuIcon
+        : darkMenuIcon;
   }
 
   static Color getButtonTextColor(BuildContext context) {
