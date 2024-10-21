@@ -59,8 +59,8 @@ class _BottomNavPageState extends State<BottomNavPage> {
           unselectedItemColor:
               AppColors.getMenuIconColor(context), // Цвет неактивных лейблов
           type: BottomNavigationBarType.fixed,
-          selectedFontSize: 4, // Размер шрифта активного пункта
-          unselectedFontSize: 4, // Размер шрифта неактивного пункта
+          selectedFontSize: 0, // Размер шрифта активного пункта
+          unselectedFontSize: 0, // Размер шрифта неактивного пункта
           onTap: (int index) {
             setState(() {
               _currentIndex = index; // Обновляем выбранный пункт меню
@@ -156,7 +156,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 color: _currentIndex == index
                     ? AppColors.getTextColor(context)
                     : AppColors.getMenuIconColor(context),
@@ -190,11 +190,18 @@ class _BottomNavPageState extends State<BottomNavPage> {
             : AppColors.lightPrimary, // Цвет фона в светлой теме
         shape: BoxShape.circle, // Круглая форма
       ),
-      child: Icon(
-        Icons.qr_code_scanner,
-        color: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkBgColor // Цвет иконки в темной теме
-            : AppColors.lightBgColor, // Цвет иконки в светлой теме
+      child: SvgPicture.asset(
+        'assets/icons/menu/scan.svg', // Путь к вашему SVG файлу
+        colorFilter: ColorFilter.mode(
+          Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkBgColor // Цвет иконки в темной теме
+              : AppColors.lightBgColor, // Цвет иконки в светлой теме,
+          BlendMode.srcIn, // Применяет цвет к изображению
+        ),
+        width: 24, // Размер SVG
+        height: 24,
+        fit: BoxFit.scaleDown, // Масштабируем SVG внутри контейнера
+        alignment: Alignment.center, // Центрируем иконку
       ),
     );
   }

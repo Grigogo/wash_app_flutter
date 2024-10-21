@@ -43,6 +43,7 @@ dependencies:
   sqflite: ^2.3.3+1
   path: ^1.9.0
   flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.4.1
 
 
 
@@ -75,6 +76,7 @@ flutter:
     - assets/splash.png
     - assets/icon.png
     - assets/icons/menu/
+    - assets/icons/other/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

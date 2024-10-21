@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vt_app/widget/main_top_bar_widget.dart';
 import '../../models/user.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,8 +10,22 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text('Добро пожаловать, ${userData?.name ?? 'Гость'}!'),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+          child: Column(
+            children: [
+              TopBarWidget(
+                onCityTap: () {
+                  Navigator.pushNamed(context, '/city_picker');
+                },
+                onNotificationTap: () {
+                  Navigator.pushNamed(context, '/notifications');
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
